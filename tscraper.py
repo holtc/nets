@@ -55,14 +55,25 @@ class TwitterSearch(object):
             self.tweets.append(Tweet(t, search))
 
     def __repr__(self):
-            return self.search
+        return self.search
+
+    def save_file(self, path):
+        f = open(path, "w") 
+        for tweet in self.tweets:
+            if isinstance(tweet.text, str):
+                print "ordinary string"
+            elif isinstance(tweet.text, unicode):
+                print "unicode string"
+            else:
+                print "not a string"
+            f.write("%d %s %s" % (tweet.id, tweet.date, tweet.text))
 
 
 class Tweet(object):
     ''' An entity corresponding to a single tweet.
     '''
     def __init__(self, tdict, srch):
-    	self.s = 
+    	self.s = srch
     	self.id = tdict['id']
         self.text = tdict['text']
         self.hashtags = []
@@ -75,6 +86,9 @@ def main():
     options = (doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS)
     print "Running doctests..."
     doctest.testmod(optionflags=options)
+    symbol = "#AAPL"
+    ts = TwitterSearch(symbol)
+    ts.save_file("data/raw/%s" % symbol)
 
 
 if __name__ == "__main__":
