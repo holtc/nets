@@ -1,2 +1,2 @@
-worker1 quality1.0
-worker2 quality0.6
+workerid2 0.600000
+workerid1 1.000000

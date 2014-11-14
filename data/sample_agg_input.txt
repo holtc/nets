@@ -7,4 +7,4 @@ articleId3 workerid2 labelneg
 articleId4 workerid1 labelneg
 articleId4 workerid2 labelneg
 articleId5 workerid1 labelpos
-articleId6 workerid2 labelpos
+articleId5 workerid2 labelpos
