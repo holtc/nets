@@ -1,0 +1,6 @@
+articleId1 labelpos
+articleId2 labelpos 
+articleId3 labelpos
+articleId4 labelneg
+articleId5 labelpos
+

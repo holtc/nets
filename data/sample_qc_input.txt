@@ -1,0 +1,11 @@
+articleId1 workerid1 labelpos goldlabelpos
+articleId1 workerid2 labelneg goldlabelpos
+articleId2 workerid1 labelpos goldlabelpos
+articleId2 workerid2 labelpos goldlabelpos
+articleId3 workerid1 labelpos goldlabelpos
+articleId3 workerid2 labelneg goldlabelpos
+articleId4 workerid1 labelneg goldlabelneg
+articleId4 workerid2 labelneg goldlabelneg
+articleId5 workerid1 labelpos goldlabelpos
+articleId6 workerid2 labelpos goldlabelpos
+

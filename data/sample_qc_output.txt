@@ -1,0 +1,2 @@
+worker1 quality1.0
+worker2 quality0.6
