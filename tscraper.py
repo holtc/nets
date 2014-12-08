@@ -6,6 +6,7 @@ import base64
 import requests
 import json
 import urllib
+import os
 
 def get_access_token():
     ''' Implement application-only authentication, as described here:
@@ -67,8 +68,10 @@ class TwitterSearch(object):
 
     #appends to file
     def save_file(self, path):
-        f = open(path, "a") 
+        f = open(path, "a")
+        num_tweets_saved = 0
         for tweet in self.tweets:
+            num_tweets_saved += 1
 #            if isinstance(tweet.text, str):
 #                print "ordinary string"
 #            elif isinstance(tweet.text, unicode):
@@ -78,6 +81,7 @@ class TwitterSearch(object):
             s = '\n'.join([str(tweet.id), str(tweet.date), (tweet.text).encode('utf-8'), '\n'])
             f.write(s)
         f.close()
+        return num_tweets_saved
         
     def __str__(self):
         s = ''
@@ -109,6 +113,14 @@ class Tweet(object):
         
     __repr__ = __str__
 
+def get_since_id(filename):
+    since_id = 0
+    if os.path.exists(filename):
+        f = open(filename, 'r')
+        since_id = int(f.readlines()[-4].strip())
+        print "exists, since = " + str(since_id)  
+        f.close()
+    return since_id
 
 def main():
     import doctest
@@ -117,30 +129,35 @@ def main():
     searches = []
     doctest.testmod(optionflags=options)
     query = "#AAPL OR @Apple"
-    ts = TwitterSearch(query, None, None)
-    searches.append(ts)
     filename = ''.join(['data/raw/twittersearch/', query])
-    count = 0
+    count = 1
+    since_id = get_since_id(filename)
+    ts = TwitterSearch(query, since_id, None)
+    searches.append(ts)
     #make sure there are tweets returned
     while ts.tweets:
         count += 1
-        if count % 500 == 0:
-            print str(count) + " tweets collected"
+        if (count % 50 == 0):
+            print str(count) + " requests....."
         #save it here because we know there are tweets to save
         searches.append(ts)
         #now get next batch of tweets
         #params are query, since_id and max_d, eg the range of tweets to search
         #need to find automatic way of 
-        ts = TwitterSearch(query, None, ts.min_id - 1)
-    
+        ts = TwitterSearch(query, since_id, ts.min_id - 1)
+    print str(count) + " requests made to twitter api"
     #goes through searches backwards, to add most recent
     #to the end, so if we run later, we can easily
     #add to the most recent to the end of the file
     #since this is much easier to do than appending
     #to the beginning of the file
     #we also should probably just put it in a db
+    num_tweets_saved = 0
     for search in searches[::-1]:
-        search.save_file(filename)
+        num_tweets_saved += search.save_file(filename)
+        if (num_tweets_saved % 50 == 0):
+            print str(num_tweets_saved) + " tweets....."
+    print str(num_tweets_saved) + " tweets saved"
 
 
 if __name__ == "__main__":
