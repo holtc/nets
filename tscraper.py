@@ -42,17 +42,19 @@ class TwitterSearch(object):
     ''' A Twitter search entity
 
     '''
-    def __init__(self, search, since_id, max_id):            
+    def __init__(self, search, since_id, max_id, until):            
         self.search = urllib.quote(search)
         self.min_id = float("inf")
         self.tweets = []
         url = 'https://api.twitter.com/1.1/search/tweets.json'
         header = {'Authorization': atoken}
         params = {'q': self.search, 'lang': 'en'}
-        if (since_id):
+        if since_id:
             params['since_id'] = since_id;
         if max_id:
             params['max_id'] = max_id
+        if until:
+            params['until'] = until
         req = requests.get(url, headers=header, params=params)
         req.raise_for_status()
         tw = req.json()
@@ -121,21 +123,17 @@ def get_since_id(filename):
         print "exists, since = " + str(since_id)  
         f.close()
     return since_id
-
-def main():
-    import doctest
-    options = (doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS)
-    print "Running doctests..."
+    
+def execute_query(query):
     searches = []
-    doctest.testmod(optionflags=options)
-    query = "#AAPL OR @Apple"
     filename = ''.join(['data/raw/twittersearch/', query])
+    print "Query: " + query
     count = 1
     since_id = get_since_id(filename)
-    ts = TwitterSearch(query, since_id, None)
+    ts = TwitterSearch(query, since_id, None, None)
     searches.append(ts)
     #make sure there are tweets returned
-    while ts.tweets:
+    while ts.tweets and count < 400:
         count += 1
         if (count % 50 == 0):
             print str(count) + " requests....."
@@ -144,7 +142,7 @@ def main():
         #now get next batch of tweets
         #params are query, since_id and max_d, eg the range of tweets to search
         #need to find automatic way of 
-        ts = TwitterSearch(query, since_id, ts.min_id - 1)
+        ts = TwitterSearch(query, since_id, ts.min_id - 1, None)
     print str(count) + " requests made to twitter api"
     #goes through searches backwards, to add most recent
     #to the end, so if we run later, we can easily
@@ -157,7 +155,16 @@ def main():
         num_tweets_saved += search.save_file(filename)
         if (num_tweets_saved % 50 == 0):
             print str(num_tweets_saved) + " tweets....."
-    print str(num_tweets_saved) + " tweets saved"
+    print str(num_tweets_saved) + " tweets saved\n"
+
+def main():
+    import doctest
+    options = (doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS)
+    print "Running doctests..."
+    doctest.testmod(optionflags=options)
+    queries = ["#GOOG OR @Google"]
+    for query in queries:
+        execute_query(query)
 
 
 if __name__ == "__main__":
