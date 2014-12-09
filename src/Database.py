@@ -17,6 +17,8 @@ class Database:
             result = cursor.fetchall()
         except MySQLdb.IntegrityError, e:
             print "Error: " + str(e)
+        except MySQLdb.ProgrammingError, e:
+            print "Bad Query: " + query
         cursor.close()
         conn.close()
         return result

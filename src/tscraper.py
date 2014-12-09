@@ -23,8 +23,10 @@ def get_access_token():
     With regards to style, it's worth thinking about how many times
     you should need to call this function.
     '''
-    ckey = 'U0P64ublAENwHcZ5lwgCADLHH'
-    csecret = 'n19TRpI1rXhZrXtgmFvY61csTJS1g4mk2n6aL2HnTtGTfQeCVf'
+    #ckey = 'U0P64ublAENwHcZ5lwgCADLHH'
+    ckey = '8RqNDHm7vjUvdqEa3l7P6DQww'
+    #csecret = 'n19TRpI1rXhZrXtgmFvY61csTJS1g4mk2n6aL2HnTtGTfQeCVf'
+    csecret = 'fHlAKr8bZvIjOV0KDXN2EDI1s4DouLuIpL7sB7NpXIsfC4zfR5'
     creds = base64.b64encode('{}:{}'.format(ckey, csecret))
     ct = 'application/x-www-form-urlencoded;charset=UTF-8'
     headers = {'Authorization': 'Basic {}'.format(creds), 'Content-Type': ct}
@@ -43,21 +45,21 @@ def get_since_id(db, search_query):
                 return long(r[0])
         return max_id
 
-    
 def search_twitter(atoken, query, db):
     count = 1
     since_id = get_since_id(db, query)
-    ts = TwitterSearch(atoken, query, since_id, None, '2014-12-11')
+    max_date = '2014-12-11'
+    ts = TwitterSearch(atoken, query, since_id + 1, None, max_date)
     #make sure there are tweets returned
     num_tweets = 0
-    while ts.tweets and count < 400:
+    while len(ts.tweets) > 0 and count < 450:
         count += 1
         if (count % 25 == 0):
             print str(count) + " requests for: " + query + "....."
         #save it here because we know there are tweets to save
         #now get next batch of tweets
         #params are query, since_id and max_id, eg the range of tweets to search
-        ts = TwitterSearch(atoken, query, since_id, ts.min_id - 1, None)
+        ts = TwitterSearch(atoken, query, since_id + 1, ts.min_id - 1, max_date)
         num_tweets += ts.save_results(db)
     print str(count) + " total requests for: " + query 
     print str(num_tweets) + " tweets saved for: " + query + '\n'
@@ -73,12 +75,11 @@ def main():
     db = Database(host, user, pwd, db_name)
     options = (doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS)
     doctest.testmod(optionflags=options)
-    queries = ["#AAPL OR @Apple", "#GOOG OR @Google"]
+    queries = ["#MSFT OR @Microsoft", "#AAPL OR @Apple", "#GOOG OR @Google", "#SNE OR @Sony"]
     total_requests = 0
     for query in queries:
         total_requests += search_twitter(atoken, query, db)
     print str(total_requests) + " requests made to Twitter API"
-
 
 if __name__ == "__main__":
     main()

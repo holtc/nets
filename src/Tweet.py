@@ -4,7 +4,7 @@ class Tweet(object):
     def __init__(self, tdict, search):
         self.search = search
         self.id = tdict['id']
-        self.text = tdict['text']
+        self.text = tdict['text'].replace("\\", "\\\\")
         #hashtags is not in the tweet response,
         #we will need to do this on our own
         self.date = tdict['created_at']
