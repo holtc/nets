@@ -53,15 +53,19 @@ def search_twitter(atoken, query, db):
     #make sure there are tweets returned
     num_tweets = 0
     while len(ts.tweets) > 0 and count < 450:
-        count += 1
         if (count % 25 == 0):
             print str(count) + " requests for: " + query + "....."
         #save it here because we know there are tweets to save
         #now get next batch of tweets
         #params are query, since_id and max_id, eg the range of tweets to search
-        ts = TwitterSearch(atoken, query, since_id + 1, ts.min_id - 1, max_date)
         num_tweets += ts.save_results(db)
-    print str(count) + " total requests for: " + query 
+
+        #save a request, since it's not full, don't need to make next request
+        if len(ts.tweets) < 15:
+            break
+        ts = TwitterSearch(atoken, query, since_id + 1, ts.min_id - 1, max_date)
+        count += 1
+    print "\n" + str(count) + " total requests for: " + query 
     print str(num_tweets) + " tweets saved for: " + query + '\n'
     return count
 

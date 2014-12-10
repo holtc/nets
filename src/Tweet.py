@@ -11,9 +11,9 @@ class Tweet(object):
     
     def __str__(self):
         return ''.join([
-        'Tweet Id: ', str(tweet.id), '\n',
-        'Date: ', str(tweet.date), '\n',
-        (tweet.text).encode('utf-8'), '\n'
+        'Tweet Id: ', str(self.id), '\n',
+        'Date: ', str(self.date), '\n',
+        (self.text).encode('utf-8'), '\n'
         ])
         
     __repr__ = __str__
@@ -25,6 +25,10 @@ class Tweet(object):
             result = db.execute(query)
             if result:
                 result = result[0][0]
+                print "Saved Tweet with id: " + str(self.id)
+            else:
+                print "Already saved tweet with id: " + str(self.id)
             return result
         except UnicodeEncodeError:
+            print "Unicode error for tweet with id: " + str(self.id)
             return None
