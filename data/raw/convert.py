@@ -17,4 +17,12 @@ for line in lines:
     line = line.replace(";", ",")
     f.write(line)
 f.close()
+
+def smooth(close_list, beta):
+    smooth = []
+    smooth.append(close_list[0])
+    for index in range(1, len(close_list)):
+        smoothed = beta * smooth[index - 1] + (1 - beta) * close_list[index]
+        smooth.append(smoothed)
+    return smooth
     
